@@ -1,11 +1,11 @@
 import React from 'react';
 
-export interface TableProps<C extends string, T extends Record<C, unknown>> {
+export interface TableProps<T extends {}, K extends keyof T> {
     lines: T[];
-    columns?: C[];
+    columns?: K[];
 }
 
-function valueToString<C extends string, T extends Record<C, unknown>>(value: T[C]): string {
+function valueToString<T extends {}, K extends keyof T>(value: T[K]): string {
     if (value instanceof Date) {
         return value.toString();
     }
@@ -24,18 +24,20 @@ function valueToString<C extends string, T extends Record<C, unknown>>(value: T[
         case "function":
         case "symbol":
             return String(value);
+        default:
+            return '';
     }
 }
 
-export default function Table<C extends string, T extends Record<C, unknown>>(props: TableProps<C, T>) {
+export default function Table<T extends {}, K extends keyof T>(props: TableProps<T,K>) {
     let {lines, columns, ...mainProps} = props;
     if (!columns) {
         columns = Array.from(
             lines.reduce((keys, line) => {
-                Object.keys(line).forEach(key => keys.add(key));
+                (Object.keys(line) as K[]).forEach(key => keys.add(key));
                 return keys;
-            }, new Set<string>())
-        ) as C[];
+            }, new Set<K>())
+        );
     }
 
     return (
