@@ -18,7 +18,10 @@
     "build": "rollup -c",
     "prepublish": "npm run build",
     "publish": "npm publish",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "preversion": "npm test",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags",
+    "test": "echo \"Error: no test specified\""
   },
   "author": {
     "name": "Jason AUCORDIER",
