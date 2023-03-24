@@ -1,6 +1,12 @@
 {
-  "name": "react-table-component",
+  "name": "@jaucordi1/react-table-component",
   "version": "0.0.1",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/Jaucordi1"
+  },
+  "repository": {
+    "url": "https://github.com/Jaucordi1/react-table-component.git"
+  },
   "description": "",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
