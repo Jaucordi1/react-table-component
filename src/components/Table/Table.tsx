@@ -1,12 +1,11 @@
-type ColumnValue = string | number | boolean | Date;
 import React from 'react';
 
-export interface TableProps<C extends string, T extends Record<C, ColumnValue>> {
+export interface TableProps<C extends string, T extends Record<C, unknown>> {
     lines: T[];
-    columns?: (keyof T)[];
+    columns?: C[];
 }
 
-function valueToString(value: ColumnValue): string {
+function valueToString<C extends string, T extends Record<C, unknown>>(value: T[C]): string {
     if (value instanceof Date) {
         return value.toString();
     }
@@ -28,7 +27,7 @@ function valueToString(value: ColumnValue): string {
     }
 }
 
-export default function Table<C extends string, T extends Record<C, ColumnValue>>(props: TableProps<C, T>) {
+export default function Table<C extends string, T extends Record<C, unknown>>(props: TableProps<C, T>) {
     let {lines, columns, ...mainProps} = props;
     if (!columns) {
         columns = Array.from(
@@ -36,7 +35,7 @@ export default function Table<C extends string, T extends Record<C, ColumnValue>
                 Object.keys(line).forEach(key => keys.add(key));
                 return keys;
             }, new Set<string>())
-        ) as (keyof T)[];
+        ) as C[];
     }
 
     return (
@@ -55,7 +54,7 @@ export default function Table<C extends string, T extends Record<C, ColumnValue>
                 <tr key={lineIdx}>
                     {columns!.map((column, columnIdx) => (
                         <td key={columnIdx}>
-                            {valueToString(line[column as keyof T])}
+                            {valueToString(line[column])}
                         </td>
                     ))}
                 </tr>
