@@ -1,0 +1,29 @@
+.table {
+  --bgColor: #ffffff;
+  --fgColor: #000000;
+}
+.table-head {
+
+}
+.table-body {
+
+}
+.table-row {
+
+}
+.table-head-cell {
+
+}
+.table-data-cell {
+
+}
+
+.table,
+.table-head,
+.table-body,
+.table-row,
+.table-head-cell,
+.table-data-cell {
+  background-color: var(--bgColor);
+  color: var(--fgColor);
+}
