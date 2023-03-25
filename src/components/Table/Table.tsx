@@ -1,11 +1,6 @@
 import React from 'react';
 
-export interface TableProps<T extends {}, K extends keyof T> {
-    lines: T[];
-    columns?: K[];
-}
-
-function valueToString<T extends {}, K extends keyof T>(value: T[K]): string {
+function valueToString(value: unknown): string {
     if (value instanceof Date) {
         return value.toString();
     }
@@ -29,12 +24,43 @@ function valueToString<T extends {}, K extends keyof T>(value: T[K]): string {
     }
 }
 
-export default function Table<T extends {}, K extends keyof T>(props: TableProps<T,K>) {
+function getDotNotationValue<T extends {}, K extends keyof T>(obj: T, key: K | string) {
+    const parts = (key as string).split('.');
+    return parts.reduce((value, keyPart) => {
+        return value[keyPart as keyof typeof value];
+    }, obj as {}) as K[];
+}
+
+function extractColumns<T extends { [key: string]: unknown }, K extends keyof T>(obj: T): K[] {
+    const keys = (Object.keys(obj) as K[]);
+    return Array.from(
+        keys.reduce(
+            (allKeys, key) => {
+                if (typeof obj[key] === 'object') {
+                    extractColumns(
+                        getDotNotationValue(obj, key) as {}
+                    ).forEach(k => allKeys.add(`${key as string}.${k}` as K));
+                } else {
+                    allKeys.add(key);
+                }
+                return allKeys;
+            },
+            new Set<K>(),
+        )
+    );
+}
+
+export interface TableProps<T extends {}, K extends keyof T> {
+    lines: T[];
+    columns?: K[];
+}
+
+export default function Table<T extends {}, K extends keyof T>(props: TableProps<T, K>) {
     let {lines, columns, ...mainProps} = props;
     if (!columns) {
         columns = Array.from(
             lines.reduce((keys, line) => {
-                (Object.keys(line) as K[]).forEach(key => keys.add(key));
+                extractColumns(line).forEach(key => keys.add(key as K));
                 return keys;
             }, new Set<K>())
         );
@@ -56,7 +82,7 @@ export default function Table<T extends {}, K extends keyof T>(props: TableProps
                 <tr key={lineIdx}>
                     {columns!.map((column, columnIdx) => (
                         <td key={columnIdx}>
-                            {valueToString(line[column])}
+                            {valueToString(getDotNotationValue(line, column))}
                         </td>
                     ))}
                 </tr>
