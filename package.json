@@ -16,10 +16,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "publish": "npm publish",
     "preversion": "npm test",
-    "version": "npm run build && git add -A dist",
+    "version": "npm run build && npm version patch -m \"Upgrade to %s for reasons\"",
     "postversion": "git push && git push --tags",
     "test": "echo \"Error: no test specified\""
   },
