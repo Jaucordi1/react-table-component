@@ -54,37 +54,54 @@ function extractColumns<T extends { [key: string]: unknown }, K extends keyof T>
 
 export interface TableProps<T extends {}, K extends keyof T> extends React.TableHTMLAttributes<HTMLTableElement> {
     lines: T[];
-    columns?: K[];
+    columns?: K[] | { K?: string };
 }
 
-export default function Table<T extends {}, K extends keyof T>(props: TableProps<T, K>) {
+export default function Table<T extends Record<string, any>, K extends keyof T>(props: TableProps<T, K>) {
     let {lines, columns, className, ...mainProps} = props;
     if (!columns) {
-        columns = Array.from(
-            lines.reduce((keys, line) => {
-                extractColumns(line).forEach(key => keys.add(key as K));
-                return keys;
-            }, new Set<K>())
+        columns = lines.reduce(
+            (obj, line) => {
+                extractColumns(line).forEach(key => obj[key as K] = key as string);
+                return obj;
+            },
+            {} as Record<K, string>,
         );
+    } else if (Array.isArray(columns)) {
+        columns = columns.reduce((obj, column) => {
+            obj[column as K] = column as string;
+            return obj;
+        }, {} as Record<K, string>);
     }
+    const cols = columns satisfies { K?: string };
 
     return (
         <table {...mainProps} className={classNames('table', className)}>
             {columns && (
                 <thead className="table-head">
                 <tr className="table-row">
-                    {columns.map((column, idx) => (
-                        <th key={idx} className="table-head-cell">
-                            {String(column)}
-                        </th>
-                    ))}
+                    {(Object.keys(cols) as (keyof typeof cols)[]).map((column, idx) => {
+                        const parts = String(cols[column]).split('.');
+                        return (
+                            <th key={idx} className="table-head-cell">
+                                {parts.map((part, i) => {
+                                    return (
+                                        <>
+                                            {part}
+                                            <br />
+                                        </>
+                                    )
+                                })}
+                            </th>
+                        );
+                    })}
                 </tr>
                 </thead>
             )}
             <tbody className="table-body">
             {lines.map((line, lineIdx) => (
                 <tr key={lineIdx} className="table-row">
-                    {columns!.map((column, columnIdx) => (
+                    {(Object.keys(cols) as (keyof typeof cols)[]).map((column, columnIdx) => (
                         <td key={columnIdx} className="table-data-cell">
                             {valueToString(getDotNotationValue(line, column))}
                         </td>
