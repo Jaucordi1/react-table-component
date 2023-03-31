@@ -86,10 +86,10 @@ export default function Table<T extends Record<string, any>, K extends keyof T>(
                             <th key={idx} className="table-head-cell">
                                 {parts.map((part, i) => {
                                     return (
-                                        <>
+                                        <React.Fragment key={part}>
                                             {part}
                                             <br />
-                                        </>
+                                        </React.Fragment>
                                     )
                                 })}
                             </th>
