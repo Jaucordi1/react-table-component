@@ -54,7 +54,7 @@ function extractColumns<T extends { [key: string]: unknown }, K extends keyof T>
 
 export interface TableProps<T extends {}, K extends keyof T> extends React.TableHTMLAttributes<HTMLTableElement> {
     lines: T[];
-    columns?: K[] | { K?: string };
+    columns?: K[] | Partial<Record<K, string>>;
 }
 
 export default function Table<T extends Record<string, any>, K extends keyof T>(props: TableProps<T, K>) {
@@ -73,7 +73,7 @@ export default function Table<T extends Record<string, any>, K extends keyof T>(
             return obj;
         }, {} as Record<K, string>);
     }
-    const cols = columns satisfies { K?: string };
+    const cols = columns satisfies Partial<Record<K, string>>;
 
     return (
         <table {...mainProps} className={classNames('table', className)}>
