@@ -98,17 +98,26 @@ export default function Table<T extends Record<string, any>, K extends keyof T>(
                 </tr>
                 </thead>
             )}
-            <tbody className="table-body">
-            {lines.map((line, lineIdx) => (
-                <tr key={lineIdx} className="table-row">
-                    {(Object.keys(cols) as (keyof typeof cols)[]).map((column, columnIdx) => (
-                        <td key={columnIdx} className="table-data-cell">
-                            {valueToString(getDotNotationValue(line, column))}
-                        </td>
-                    ))}
-                </tr>
-            ))}
-            </tbody>
+            {lines.length === 0 && (
+                <tbody className="table-body">
+                    <tr className="table-row">
+                        <td className="table-data-cell">No data</td>
+                    </tr>
+                </tbody>
+            )}
+            {lines.length > 0 && (
+                <tbody className="table-body">
+                {lines.map((line, lineIdx) => (
+                    <tr key={lineIdx} className="table-row">
+                        {(Object.keys(cols) as (keyof typeof cols)[]).map((column, columnIdx) => (
+                            <td key={columnIdx} className="table-data-cell">
+                                {valueToString(getDotNotationValue(line, column))}
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+                </tbody>
+            )}
         </table>
     )
 }
