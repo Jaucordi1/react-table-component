@@ -38,7 +38,7 @@ function extractColumns<T extends { [key: string]: unknown }, K extends keyof T>
     return Array.from(
         keys.reduce(
             (allKeys, key) => {
-                if (typeof obj[key] === 'object') {
+                if (typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
                     extractColumns(
                         getDotNotationValue(obj, key) as {}
                     ).forEach(k => allKeys.add(`${key as string}.${k}` as K));
