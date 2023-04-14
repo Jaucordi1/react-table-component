@@ -1,123 +1,174 @@
 import './Table.component.css';
 import classNames from 'classnames';
+import {useTable} from "../../hooks/useTable";
 import React from 'react';
+import {Path} from "../../hooks/useDotNotation";
 
-function valueToString(value: unknown): string {
-    if (value instanceof Date) {
-        return value.toString();
-    }
-    switch (typeof value) {
-        case "string":
-            return value;
-        case "number":
-        case "bigint":
-            return value.toString(10);
-        case "object":
-            return JSON.stringify(value);
-        case "undefined":
-            return "";
-        case "boolean":
-            return value ? 'TRUE' : 'FALSE';
-        case "function":
-        case "symbol":
-            return String(value);
-        default:
-            return '';
-    }
-}
-
-function getDotNotationValue<T extends {}, K extends keyof T>(obj: T, key: K | string) {
-    const parts = (key as string).split('.');
-    return parts.reduce((value, keyPart) => {
-        return value[keyPart as keyof typeof value];
-    }, obj as {}) as K[];
-}
-
-function extractColumns<T extends { [key: string]: unknown }, K extends keyof T>(obj: T): K[] {
-    const keys = (Object.keys(obj) as K[]);
-    return Array.from(
-        keys.reduce(
-            (allKeys, key) => {
-                if (typeof obj[key] === 'object' && !(obj[key] instanceof Date)) {
-                    extractColumns(
-                        getDotNotationValue(obj, key) as {}
-                    ).forEach(k => allKeys.add(`${key as string}.${k}` as K));
-                } else {
-                    allKeys.add(key);
-                }
-                return allKeys;
-            },
-            new Set<K>(),
-        )
-    );
-}
-
-export interface TableProps<T extends {}, K extends keyof T> extends React.TableHTMLAttributes<HTMLTableElement> {
+export interface TableProps<
+    T extends Record<string | number, any>,
+    K extends Path<T>,
+    LPPA extends number[],
+    LPP extends LPPA[number]
+> extends React.TableHTMLAttributes<HTMLTableElement> {
     lines: T[];
     columns?: K[] | Partial<Record<K, string>>;
+    caseSensitiveSearch?: boolean;
+    compactMode?: boolean;
+    allowSelect?: boolean;
+    linesPerPageOptions?: LPPA;
+    linesPerPage?: LPP;
 }
 
-export default function Table<T extends Record<string, any>, K extends keyof T>(props: TableProps<T, K>) {
-    let {lines, columns, className, ...mainProps} = props;
-    if (!columns) {
-        columns = lines.reduce(
-            (obj, line) => {
-                extractColumns(line).forEach(key => obj[key as K] = key as string);
-                return obj;
-            },
-            {} as Record<K, string>,
-        );
-    } else if (Array.isArray(columns)) {
-        columns = columns.reduce((obj, column) => {
-            obj[column as K] = column as string;
-            return obj;
-        }, {} as Record<K, string>);
-    }
-    const cols = columns satisfies Partial<Record<K, string>>;
+export default function Table<
+    T extends Record<string | number, any>,
+    K extends Path<T>,
+    LPPA extends number[],
+    LPP extends LPPA[number]
+>(props: TableProps<T, K, LPPA, LPP>) {
+    const {
+        lines,
+        columns,
+        className,
+        allowSelect = false,
+        compactMode = true,
+        linesPerPageOptions = [3, 5, 10],
+        linesPerPage = 5,
+        ...mainProps
+    } = props;
 
-    return (
-        <table {...mainProps} className={classNames('table', className)}>
-            {columns && (
-                <thead className="table-head">
-                <tr className="table-row">
-                    {(Object.keys(cols) as (keyof typeof cols)[]).map((column, idx) => {
-                        const parts = String(cols[column]).split('.');
-                        return (
-                            <th key={idx} className="table-head-cell">
-                                {parts.map((part, i) => {
-                                    return (
-                                        <React.Fragment key={part}>
-                                            {part}
-                                            <br />
-                                        </React.Fragment>
-                                    )
-                                })}
-                            </th>
-                        );
-                    })}
-                </tr>
-                </thead>
-            )}
-            {lines.length === 0 && (
-                <tbody className="table-body">
-                    <tr className="table-row">
-                        <td className="table-data-cell">No data</td>
-                    </tr>
-                </tbody>
-            )}
-            {lines.length > 0 && (
-                <tbody className="table-body">
-                {lines.map((line, lineIdx) => (
-                    <tr key={lineIdx} className="table-row">
-                        {(Object.keys(cols) as (keyof typeof cols)[]).map((column, columnIdx) => (
-                            <td key={columnIdx} className="table-data-cell">
-                                {valueToString(getDotNotationValue(line, column))}
-                            </td>
+    const [{
+        cols,
+        pages,
+        actualPageLines,
+        actualPage,
+        linePerPageOptions,
+        linePerPage,
+        renderSorter,
+        renderCellData,
+        handleSearchChange,
+        searchValue,
+        sortByColumn,
+        sortState,
+        setPage,
+        previousPage,
+        nextPage,
+        changeLinePerPage,
+        getPaginationList,
+        handleLinePerPageChange,
+        sortedLines,
+        getPageForLineIndex,
+        valueToString,
+        getDotNotationValue,
+        getValueToSort,
+        lineSorter,
+        lineCount,
+        defaultLinePerPage,
+        searchInputRef,
+    }] = useTable({lines, columns, linesPerPage, linesPerPageOptions});
+
+    const hasHeadings = actualPageLines.length > 0 || (!!cols && Object.keys(cols).length > 0);
+
+    console.debug(defaultLinePerPage, linePerPage);
+
+    const TableComponent = () => (
+        <div className={classNames("table-wrapper", {
+            "empty": actualPageLines.length === 0,
+        })}>
+            <div className="table-top">
+                <div>
+                    Show&nbsp;
+                    <select className="table-line-per-page-select" value={linePerPage} onChange={changeLinePerPage}>
+                        {linePerPageOptions.map((linePerPageOption, idx) => (
+                            <option key={idx} value={linePerPageOption}>{linePerPageOption}</option>
                         ))}
-                    </tr>
-                ))}
+                    </select>
+                    &nbsp;entries
+                </div>
+                <p className="table-sorting-state">
+                    <span>Sorted on column <b>{cols[sortState.column]}</b></span>
+                    <span>by order <b>{sortState.direction.toLocaleUpperCase()}</b></span>
+                </p>
+                <div>
+                    <input type="search" name="table-search" className="table-search-input" ref={searchInputRef}
+                           placeholder="Search…" onChange={handleSearchChange} value={searchValue} />
+                </div>
+            </div>
+            <table {...mainProps} className={classNames("table", {
+                "no-select": !allowSelect,
+                "with-heading": hasHeadings,
+                "compact": compactMode,
+            }, className)}>
+                {hasHeadings && (
+                    <thead className="table-head">
+                        <tr className="table-row">
+                            {(Object.keys(cols) as K[]).map((column, idx) => {
+                                const parts = String(cols[column]).split('.');
+                                return (
+                                    <th key={idx} className="table-cell table-head-cell table-sorting-cell"
+                                        onClick={() => sortByColumn(column)}>
+                                        {parts.join(' > ')}
+                                        <div className="table-head-cell-sorter-container">
+                                            {renderSorter(column, 'asc')}
+                                            {renderSorter(column, 'desc')}
+                                        </div>
+                                    </th>
+                                );
+                            })}
+                            <td className="table-cell table-sizing-cell"></td>
+                        </tr>
+                    </thead>
+                )}
+                <tbody className="table-body">
+                    {actualPageLines.length === 0 ? (
+                        <tr className="table-row table-nodata-row">
+                            <td className="table-cell table-nodata-cell" colSpan={Object.keys(cols).length}>
+                                No data available in table
+                            </td>
+                        </tr>
+                    ) : (actualPageLines.map((line, lineIdx) => (
+                        <tr key={lineIdx} className="table-row">
+                            {(Object.keys(cols) as K[]).map((column, columnIdx) => (
+                                <td key={columnIdx} className="table-cell table-data-cell">
+                                    {renderCellData(line, column) || null}
+                                </td>
+                            ))}
+                            <td className="table-cell table-sizing-cell"></td>
+                        </tr>
+                    )))}
                 </tbody>
-            )}
-        </table>
+            </table>
+            <div className="table-bottom no-select">
+                <div className="table-pagination-state">
+                    Showing&nbsp;
+                    {lines.length === 0 ? 0 : ((actualPage - 1) * linePerPage) + 1}
+                    &nbsp;to&nbsp;
+                    {((actualPage - 1) * linePerPage) + actualPageLines.length}
+                    &nbsp;of&nbsp;
+                    {lines.length}
+                    &nbsp;entries
+                </div>
+                <div className={classNames("table-pagination-controls", {
+                    "no-pages": getPaginationList().length === 0,
+                })}>
+                    <button className={classNames("table-prev-page", {
+                        "active": actualPage > 1,
+                    })} onClick={previousPage}>Previous
+                    </button>
+                    {getPaginationList().map((page) => (
+                        <button key={page} className={classNames("table-page", {
+                            "current": page === actualPage,
+                        })}
+                                onClick={() => setPage(page)}
+                                children={page} />
+                    ))}
+                    <button className={classNames("table-next-page", {
+                        "active": actualPage < pages.length,
+                    })} onClick={nextPage}>Next
+                    </button>
+                </div>
+            </div>
+        </div>
     )
+
+    return <TableComponent />
 }

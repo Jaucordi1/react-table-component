@@ -1,29 +1,238 @@
-.table {
-  --bgColor: #ffffff;
-  --fgColor: #000000;
+.table-wrapper,
+.table-wrapper * {
+    box-sizing: border-box;
 }
-.table-head {
-
+.table-wrapper {
+    --bgColor: #ffffff;
+    --fgColor: #000000;
+    --accentColor: #176DAD;
+    --padding: 1em;
+    --fontSize: 1em;
+    --lineHeight: var(--fontSize);
+    --weightNormal: 500;
+    --weightHeading: 700;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    place-content: flex-start;
+    place-items: flex-start;
 }
-.table-body {
 
-}
-.table-row {
-
-}
-.table-head-cell {
-
-}
-.table-data-cell {
-
+/* Helpers */
+.no-select {
+    user-select: none;
 }
 
+/* Table & cells */
 .table,
 .table-head,
 .table-body,
 .table-row,
+.table-cell,
+.table-nodata-cell,
 .table-head-cell,
+.table-data-cell,
+.table-page {
+    background-color: var(--bgColor);
+    color: var(--fgColor);
+}
+.table {
+    display: block;
+    font-size: var(--fontSize);
+    line-height: var(--lineHeight);
+    font-weight: var(--weightNormal);
+    table-layout: fixed;
+
+    width: 100%;
+    overflow-x: auto;
+    min-height: 0;
+    height: max-content;
+    margin: 1em 0;
+
+    border: none;
+    border-collapse: collapse;
+}
+.table-head {
+    border-bottom: 1px solid var(--fgColor);
+}
+.table-head,
+.table-body {
+    width: 100%;
+    white-space: nowrap;
+}
+.table-row {
+    width: 100%;
+}
+.table-cell {
+    position: relative;
+    padding: var(--padding);
+    text-align: start;
+    min-width: 0;
+    max-width: none;
+}
+.table-nodata-row,
+.table-nodata-cell,
+.table-wrapper.empty .table-body {
+    display: block;
+    width: 100% !important;
+    text-align: center;
+}
+.table-body .table-cell:last-child {
+    width: max-content;
+}
+.table:is(.with-heading) .table-body {
+    border-top: 1px solid var(--fgColor);
+    border-bottom: 1px solid var(--fgColor);
+}
+.table:is(.with-heading) .table-body .table-row:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+.table-nodata-cell {
+    text-align: center;
+    font-weight: 700;
+    font-size: calc(2 * var(--fontSize));
+}
+.table-head-cell {
+    padding-left: 1.8em;
+    font-weight: var(--weightHeading);
+    font-size: calc(1.2 * var(--fontSize));
+}
 .table-data-cell {
-  background-color: var(--bgColor);
-  color: var(--fgColor);
+
+}
+.table:is(.compact) .table-body .table-cell {
+    padding-top: calc(.5 * var(--padding));
+    padding-bottom: calc(.5 * var(--padding));
+}
+.table-top {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    place-content: space-between;
+    place-items: flex-end;
+}
+.table-search-input {
+    margin: 0;
+    padding: .5em;
+}
+.table-sizing-cell {
+    width: 100%;
+}
+
+/* Pagination */
+.table-bottom {
+    width: 100%;
+    font-size: .8em;
+    display: flex;
+    flex-direction: row;
+    place-content: space-between;
+    place-items: center;
+}
+.table-line-per-page-select {
+    padding: .2em .5em;
+    cursor: pointer;
+    font-weight: bold;
+}
+.table-line-per-page-select option {
+    padding: .2em .5em;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+.table-pagination-state {
+    font-size: 1.5em;
+}
+.table-pagination-controls {
+    display: flex;
+    flex-direction: row;
+    place-content: flex-end;
+    place-items: center;
+    opacity: 1;
+    transition: opacity 2s ease-in-out;
+}
+.table-pagination-controls.no-pages {
+    opacity: 0;
+}
+.table-prev-page,
+.table-next-page {
+    border: none;
+    background: none;
+    font-size: 1.2em;
+    cursor: default;
+}
+.table-prev-page.active,
+.table-next-page.active {
+    cursor: pointer;
+    font-weight: bold;
+}
+.table-page {
+    font-size: 1.5em;
+    border: none;
+    background: none;
+    margin: 0;
+    padding: 0 .5em;
+    cursor: pointer;
+    transition: font-size, padding-left, padding-right, font-weight .1s linear;
+}
+.table-page:hover:not(.current) {
+    font-size: 2em;
+    line-height: .85em;
+    margin: 0 -.2em;
+    font-weight: bold;
+}
+.table-page.current {
+    color: var(--accentColor);
+    font-size: 2em;
+    line-height: .85em;
+    font-weight: bold;
+    margin: 0 -.2em;
+    cursor: default;
+}
+
+/* Sorting */
+.table-sorting-state {
+    display: flex;
+    flex-direction: row;
+    place-content: center;
+    place-items: flex-end;
+    gap: 1ch;
+}
+.table-sorting-cell {
+    cursor: pointer;
+}
+.table-head-cell-sorter-container {
+    position: absolute;
+    left: .5em;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    place-content: center;
+    place-items: center;
+}
+.table-head-cell-sorter {
+    position: relative;
+    width: .5em;
+    height: .5em;
+    cursor: pointer;
+    opacity: .5;
+}
+.table-head-cell-sorter.enabled {
+    color: var(--accentColor);
+    opacity: 1;
+}
+.table-head-cell-sorter.disabled {
+    color: var(--bgColor);
+}
+.table-head-cell-sorter::before {
+    content: "\27A7";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+.table-head-cell-sorter.asc::before {
+    rotate: -90deg;
+}
+.table-head-cell-sorter.desc::before {
+    rotate: 90deg;
 }
