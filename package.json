@@ -17,8 +17,6 @@
   "scripts": {
     "build": "rollup -c rollup.config.mjs",
     "prepublishOnly": "npm run build",
-    "publish": "npm publish",
-    "preversion": "npm run build",
     "postversion": "git push && git push --tags",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
