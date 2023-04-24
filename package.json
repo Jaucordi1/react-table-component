@@ -21,8 +21,7 @@
     "eject": "react-scripts eject",
     "prepublishOnly": "npm run build",
     "publish": "npm publish",
-    "preversion": "npm test",
-    "version": "npm run build && npm version patch",
+    "preversion": "npm run build && npm test",
     "postversion": "git push && git push --tags",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
