@@ -21,7 +21,8 @@
     "prepublishOnly": "npm run build",
     "postversion": "git push && git push --tags",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook -o docs"
+    "prebuild-storybook": "rm -rf docs",
+    "build-storybook": "build-storybook -o docs --docs"
   },
   "author": {
     "name": "Jason AUCORDIER",
