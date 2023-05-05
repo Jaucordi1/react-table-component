@@ -1,8 +1,8 @@
 import React from "react";
 
-export function useSelect<T extends string | number>(options: T[]) {
+export function useSelect<T extends string | number>(options: T[], defaultSelected: T) {
     const valueType = typeof options[0];
-    const [selected, setSelected] = React.useState<T>(options[0]);
+    const [selected, setSelected] = React.useState<T>(defaultSelected);
     const selectValue = (value: T) => options.some(v => v === value)
         ? setSelected(value)
         : undefined;
