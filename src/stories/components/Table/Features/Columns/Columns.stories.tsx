@@ -50,8 +50,6 @@ ArraysDotNotation.args = {
         "title",
         "medias.0.id",
         "medias.0.type",
-        "medias.0.name",
-        "medias.0.url",
         "date",
     ],
 };
@@ -65,8 +63,6 @@ ObjectsDotNotation.args = {
         "title",
         "thumbnail.id",
         "thumbnail.type",
-        "thumbnail.name",
-        "thumbnail.url",
         "date",
     ],
 };

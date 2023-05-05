@@ -3,8 +3,6 @@ export type MediaType = 'image' | 'sound' | 'video';
 export interface Media {
     id: string;
     type: MediaType;
-    name: string;
-    url: string;
 }
 
 export interface Post {
@@ -22,20 +20,14 @@ export const MEDIAS: Media[] = [
     {
         id: '1',
         type: 'sound',
-        name: 'The 4 Seasons, Op. 8/4, RV 297, "Winter"',
-        url: 'https://music.youtube.com/watch?v=6RuXDDIC3PU',
     },
     {
         id: '2',
         type: 'image',
-        name: '31Ob89vnESs1421519sUT8B1KSDwrYgDiRdij1dWXiaicigssilSMR7OaWvGzFRj9WOkdtlYDIW_Sxlqtg',
-        url: 'https://lh3.googleusercontent.com/31Ob89vnESs1421519sUT8B1KSDwrYgDiRdij1dWXiaicigssilSMR7OaWvGzFRj9WOkdtlYDIW_Sxlqtg=w544-h544-l90-rj',
     },
     {
         id: '3',
         type: 'video',
-        name: 'Les Quatre Saisons de Antonio Vivaldi',
-        url: 'https://youtu.be/C243DQBfjho?t=1868',
     },
 ];
 
