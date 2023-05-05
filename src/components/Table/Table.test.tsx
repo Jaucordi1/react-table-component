@@ -19,7 +19,7 @@ describe("Table component", function () {
         test("Date", function () {
             render(<Table lines={LINES} columns={["date"]} />);
             const elements = screen.getAllByText(now.toLocaleDateString());
-            expect(elements).toHaveLength(3);
+            expect(elements).toHaveLength(4);
         });
     });
 });
