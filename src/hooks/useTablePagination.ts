@@ -70,8 +70,16 @@ export function useTablePagination<LINE extends Record<string, any>, COLUMN exte
 
         return paginationList;
     }, [pageCount, pageCursor]);
-    const setPage = React.useCallback((page: number) => setPageCursor(Math.min(Math.max(page, 1), pageCount)), [pageCount]);
-    const nextPage = React.useCallback(() => setPageCursor(page => Math.min(page + 1, pageCount)), [pageCount]);
+    const setPage = React.useCallback((page: number) => {
+        if (pageCount > 0) {
+            setPageCursor(Math.min(Math.max(page, 1), pageCount));
+        }
+    }, [pageCount]);
+    const nextPage = React.useCallback(() => {
+        if (pageCount > 1) {
+            setPageCursor(page => Math.min(page + 1, pageCount));
+        }
+    }, [pageCount]);
     const previousPage = () => setPageCursor(page => Math.max(page - 1, 1));
 
     return [
