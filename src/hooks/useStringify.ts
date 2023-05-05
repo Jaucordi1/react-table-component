@@ -1,8 +1,9 @@
+function isDate(date: unknown): date is Date {
+    return date instanceof Date;
+}
+
 export function useStringify() {
     const stringify = (value: unknown): string => {
-        if (value instanceof Date) {
-            return value.toString();
-        }
         switch (typeof value) {
             case "string":
                 return value;
@@ -10,6 +11,7 @@ export function useStringify() {
             case "bigint":
                 return value.toString(10);
             case "object":
+                if (isDate(value)) return value.toLocaleDateString();
                 return JSON.stringify(value, undefined, 4);
             case "undefined":
                 return "";

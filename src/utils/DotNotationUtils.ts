@@ -4,6 +4,8 @@ export type IsAny<T> = unknown extends T
         : true)
     : false;
 
+export type IsDate<T> = T extends Date ? true : false;
+
 type ExcludeArrayKeys<T> = T extends ArrayLike<any>
     ? Exclude<keyof T, keyof any[]>
     : keyof T;
@@ -11,11 +13,13 @@ type ExcludeArrayKeys<T> = T extends ArrayLike<any>
 type PathImpl<T, Key extends keyof T> = Key extends string
     ? IsAny<T[Key]> extends true
         ? never
-        : T[Key] extends Record<string, any>
-            ?
-            | `${Key}.${PathImpl<T[Key], ExcludeArrayKeys<T[Key]>> & string}`
-            | `${Key}.${ExcludeArrayKeys<T[Key]> & string}`
-            : never
+        : IsDate<T[Key]> extends true
+            ? Key
+            : T[Key] extends Record<string, any>
+                ?
+                | `${Key}.${PathImpl<T[Key], ExcludeArrayKeys<T[Key]>> & string}`
+                | `${Key}.${ExcludeArrayKeys<T[Key]> & string}`
+                : never
     : never;
 
 type PathImpl2<T> = PathImpl<T, keyof T> | keyof T;
@@ -38,29 +42,13 @@ export type Choose<
     : T[K];
 
 class DotNotationUtils {
-    private getKeyValue = <T extends {}, K extends keyof T>(obj: T, key: K): T[K] => {
-        if (Array.isArray(obj)) {
-            if (isNaN(Number(key))) {
-                throw new Error(`Key '${key as string}' can't be used to index given array`);
-            }
-            return obj[Number(key)];
-        } else {
-            return obj[key];
-        }
-    }
-
-    private getObjectPathParts = <T extends {}, K extends Path<T>>(obj: T, key: K): K[] => {
-        return String(key).split('.') as K[];
-
-    }
-
     public getObjectValue = <T extends {}, K extends Path<T>>(obj: T, key: K) => {
         // null | undefined
-        if (obj == null) return obj;
+        if (obj == null) return obj as Choose<T, K>;
 
         // Root key
-        if (!key.includes('.')) {
-            return this.getKeyValue(obj, key as keyof T);
+        if (!key.includes(".")) {
+            return this.getKeyValue(obj, key as keyof T) as Choose<T, K>;
         }
 
         // Dot notation path
@@ -75,7 +63,23 @@ class DotNotationUtils {
             },
             obj as Choose<T, K>,
         );
-    }
+    };
+
+    private getKeyValue = <T extends {}, K extends keyof T>(obj: T, key: K): T[K] => {
+        if (Array.isArray(obj)) {
+            if (isNaN(Number(key))) {
+                throw new Error(`Key '${key as string}' can't be used to index given array`);
+            }
+            return obj[Number(key)];
+        } else {
+            return obj[key];
+        }
+    };
+
+    private getObjectPathParts = <T extends {}, K extends Path<T>>(obj: T, key: K): K[] => {
+        return String(key).split(".") as K[];
+
+    };
 }
 
 export const DOTNotationUtils = new DotNotationUtils();

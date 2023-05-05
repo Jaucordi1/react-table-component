@@ -1,8 +1,8 @@
-import './Table.component.css';
-import classNames from 'classnames';
+import "./Table.component.css";
+import React from "react";
+import classNames from "classnames";
+import type {Path} from "../../hooks/useDotNotation";
 import {useTable} from "../../hooks/useTable";
-import React from 'react';
-import {Path} from "../../hooks/useDotNotation";
 
 export interface TableProps<
     T extends Record<string | number, any>,
@@ -68,7 +68,8 @@ export default function Table<
 
     const hasHeadings = actualPageLines.length > 0 || (!!cols && Object.keys(cols).length > 0);
 
-    console.debug(defaultLinePerPage, linePerPage);
+    // TODO Make the default value work correctly for LPP
+    // console.debug(defaultLinePerPage, linePerPage);
 
     const TableComponent = () => (
         <div className={classNames("table-wrapper", {
@@ -102,14 +103,14 @@ export default function Table<
                     <thead className="table-head">
                         <tr className="table-row">
                             {(Object.keys(cols) as K[]).map((column, idx) => {
-                                const parts = String(cols[column]).split('.');
+                                const parts = String(cols[column]).split(".");
                                 return (
                                     <th key={idx} className="table-cell table-head-cell table-sorting-cell"
                                         onClick={() => sortByColumn(column)}>
-                                        {parts.join(' > ')}
+                                        {parts.join(" > ")}
                                         <div className="table-head-cell-sorter-container">
-                                            {renderSorter(column, 'asc')}
-                                            {renderSorter(column, 'desc')}
+                                            {renderSorter(column, "asc")}
+                                            {renderSorter(column, "desc")}
                                         </div>
                                     </th>
                                 );
