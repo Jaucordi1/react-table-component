@@ -67,7 +67,7 @@ export default function Table<
     }] = useTable({lines, columns, linesPerPage, linesPerPageOptions});
 
     const hasHeadings = actualPageLines.length > 0 || (!!cols && Object.keys(cols).length > 0);
-    const noLinesToDisplay = actualPageLines.length === 0;
+    const noLinesToDisplay = lines.length === 0;
 
     // TODO Make the default value work correctly for LPP
     // console.debug(defaultLinePerPage, linePerPage);
