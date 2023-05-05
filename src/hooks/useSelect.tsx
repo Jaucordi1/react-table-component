@@ -1,6 +1,6 @@
 import React from "react";
 
-export function useSelect<T extends string | number>(options: T[], defaultSelected: T) {
+export function useSelect<T extends string | number>(options: T[], defaultSelected: T, beforeChange: (nextValue: T) => void = () => undefined) {
     const valueType = typeof options[0];
     const [selected, setSelected] = React.useState<T>(defaultSelected);
     const selectValue = (value: T) => options.some(v => v === value)
@@ -13,6 +13,7 @@ export function useSelect<T extends string | number>(options: T[], defaultSelect
                 ? event.target.value
                 : null;
         if (value !== null) {
+            beforeChange(value as T);
             selectValue(value as T);
         }
         return value as T;
