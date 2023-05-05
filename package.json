@@ -1,8 +1,8 @@
 {
-  "name": "@jaucordi1/react-table-component",
+  "name": "smart-react-table",
   "version": "1.0.2",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/Jaucordi1"
+    "registry": "https://registry.npmjs.org/"
   },
   "repository": {
     "url": "https://github.com/Jaucordi1/react-table-component.git"
