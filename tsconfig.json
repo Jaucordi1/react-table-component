@@ -20,7 +20,9 @@
   "exclude": [
     "dist",
     "node_modules",
+    "src/setupTests.ts",
     "src/**/*.test.tsx",
-    "src/**/*.stories.tsx",
+    "src/stories/**/*.stories.tsx",
+    "src/stories/**/*.ts"
   ]
 }
