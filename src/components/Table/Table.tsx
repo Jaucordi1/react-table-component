@@ -78,7 +78,8 @@ export default function Table<
             <div className="table-top">
                 <div>
                     Show&nbsp;
-                    <select className="table-line-per-page-select" value={linePerPage} onChange={changeLinePerPage}>
+                    <select className="table-line-per-page-select" disabled={linesPerPageOptions.length <= 1}
+                            value={linePerPage} onChange={changeLinePerPage}>
                         {linePerPageOptions.map((linePerPageOption, idx) => (
                             <option key={idx} value={linePerPageOption}>{linePerPageOption}</option>
                         ))}
