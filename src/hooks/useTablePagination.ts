@@ -17,7 +17,11 @@ export function useTablePagination<LINE extends Record<string, any>, COLUMN exte
     defaultLinePerPage: LPP,
 ) {
     // Pagination
-    const [linePerPage, changeLinePerPage, linePerPageOptions] = useSelect(linesPerPage, defaultLinePerPage);
+    const [linePerPage, changeLinePerPage, linePerPageOptions] = useSelect(linesPerPage, defaultLinePerPage, (newLpp => {
+        const newPageCount = Math.ceil(lineCount / newLpp);
+        const newPageCursor = pageCursor > newPageCount ? newPageCount : pageCursor;
+        setPageCursor(newPageCursor);
+    }));
     const [pageCursor, setPageCursor] = React.useState(1);
     const lineCount = React.useMemo(() => lines.length, [lines]);
     const pageCount = React.useMemo(() => Math.ceil(lines.length / linePerPage), [lines, linePerPage]);
