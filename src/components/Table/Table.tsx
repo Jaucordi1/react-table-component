@@ -71,7 +71,7 @@ export default function Table<
     // TODO Make the default value work correctly for LPP
     // console.debug(defaultLinePerPage, linePerPage);
 
-    const TableComponent = () => (
+    return (
         <div className={classNames("table-wrapper", {
             "empty": actualPageLines.length === 0,
         })}>
@@ -169,7 +169,5 @@ export default function Table<
                 </div>
             </div>
         </div>
-    )
-
-    return <TableComponent />
+    );
 }
