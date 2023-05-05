@@ -67,6 +67,7 @@ export default function Table<
     }] = useTable({lines, columns, linesPerPage, linesPerPageOptions});
 
     const hasHeadings = actualPageLines.length > 0 || (!!cols && Object.keys(cols).length > 0);
+    const noLinesToDisplay = actualPageLines.length === 0;
 
     // TODO Make the default value work correctly for LPP
     // console.debug(defaultLinePerPage, linePerPage);
@@ -78,7 +79,7 @@ export default function Table<
             <div className="table-top">
                 <div>
                     Show&nbsp;
-                    <select className="table-line-per-page-select" disabled={linesPerPageOptions.length <= 1}
+                    <select className="table-line-per-page-select" disabled={linesPerPageOptions.length <= 1 || noLinesToDisplay}
                             value={linePerPage} onChange={changeLinePerPage}>
                         {linePerPageOptions.map((linePerPageOption, idx) => (
                             <option key={idx} value={linePerPageOption}>{linePerPageOption}</option>
@@ -86,13 +87,15 @@ export default function Table<
                     </select>
                     &nbsp;entries
                 </div>
-                <p className="table-sorting-state">
-                    <span>Sorted on column <b>{cols[sortState.column]}</b></span>
-                    <span>by order <b>{sortState.direction.toLocaleUpperCase()}</b></span>
-                </p>
+                {!noLinesToDisplay && (
+                    <p className="table-sorting-state">
+                        <span>Sorted on column <b>{cols[sortState.column]}</b></span>
+                        <span>by order <b>{sortState.direction.toLocaleUpperCase()}</b></span>
+                    </p>
+                )}
                 <div>
                     <input type="search" name="table-search" className="table-search-input" ref={searchInputRef}
-                           placeholder="Search…" onChange={handleSearchChange} value={searchValue} />
+                           placeholder="Search…" onChange={handleSearchChange} value={searchValue} disabled={noLinesToDisplay} />
                 </div>
             </div>
             <table {...mainProps} className={classNames("table", {
