@@ -1,6 +1,6 @@
 {
   "name": "@jaucordi1/react-table-component",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/Jaucordi1"
   },
