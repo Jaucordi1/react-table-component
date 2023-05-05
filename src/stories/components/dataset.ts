@@ -56,7 +56,7 @@ export const LINES: Post[] = [
         active: true,
         title: "Free article",
         content: 'Draft',
-        date: new Date(),
+        date: new Date(1993, 10, 11),
     },
     {
         id: "3",
