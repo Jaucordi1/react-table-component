@@ -1,6 +1,7 @@
 {
   "name": "smart-react-table",
   "version": "1.0.2",
+  "private": false,
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
