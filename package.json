@@ -16,12 +16,12 @@
   ],
   "types": "dist/index.d.ts",
   "scripts": {
-    "prebuild": "rm -rf dist",
+    "prebuild": "rimraf dist",
     "build": "rollup -c rollup.config.mjs",
     "prepublishOnly": "npm run build",
     "postversion": "git push && git push --tags",
     "storybook": "start-storybook -p 6006",
-    "prebuild-storybook": "rm -rf docs",
+    "prebuild-storybook": "rimraf docs",
     "build-storybook": "build-storybook -o docs --docs"
   },
   "author": {
@@ -60,7 +60,8 @@
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-terser": "^7.0.2",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "rimraf": "^5.0.1"
   },
   "peerDependencies": {
     "react": ">=17"
