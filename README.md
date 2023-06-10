@@ -17,4 +17,4 @@ npm install --save smart-react-table
 
 # How to use
 
-Please check the storybook on the github repo.
+Please check [the storybook on the github pages](https://jaucordi1.github.io/react-table-component/).
